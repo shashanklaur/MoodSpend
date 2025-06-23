@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  monthlyGoal: {
+    type: Number,
+    default: 0, // Default goal is 0 until the user sets one
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
