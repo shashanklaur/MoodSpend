@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // ✅ needed for Edit button navigation
+import { useNavigate } from "react-router-dom";
+
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 function ViewEntriesPage() {
   const [entries, setEntries] = useState([]);
-  const navigate = useNavigate(); // ✅ hook to redirect user
+  const navigate = useNavigate();
 
   const fetchEntries = async () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.get("http://localhost:5000/api/entries", {
+      const res = await axios.get(`${baseUrl}/api/entries`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -31,13 +33,13 @@ function ViewEntriesPage() {
     if (!window.confirm("Are you sure you want to delete this entry?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/entries/${id}`, {
+      await axios.delete(`${baseUrl}/api/entries/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       alert("Entry deleted.");
-      fetchEntries(); // Refresh the list
+      fetchEntries();
     } catch (err) {
       console.error("Delete failed", err);
       alert("Failed to delete entry.");
@@ -45,7 +47,7 @@ function ViewEntriesPage() {
   };
 
   const handleEdit = (id) => {
-    navigate(`/edit-entry/${id}`); // ✅ go to edit screen
+    navigate(`/edit-entry/${id}`);
   };
 
   return (

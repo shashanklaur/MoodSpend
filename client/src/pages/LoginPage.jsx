@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -8,16 +10,15 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post(`${baseUrl}/api/auth/login`, {
         email,
         password,
       });
 
       const { token } = res.data;
-      localStorage.setItem("token", token); // ✅ Save token in localStorage
-
+      localStorage.setItem("token", token);
       alert("Login successful!");
-      window.location.href = "/add-entry"; // ✅ Redirect to entry page
+      window.location.href = "/add-entry";
     } catch (err) {
       alert("Login failed");
       console.error(err);

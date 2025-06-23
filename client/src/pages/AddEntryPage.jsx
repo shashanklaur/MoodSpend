@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 function AddEntryPage() {
   const [amount, setAmount] = useState("");
   const [mood, setMood] = useState("Happy");
@@ -9,12 +11,11 @@ function AddEntryPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const token = localStorage.getItem("token");
 
     try {
       await axios.post(
-        "http://localhost:5000/api/entries",
+        `${baseUrl}/api/entries`,
         {
           amount: parseFloat(amount),
           mood,

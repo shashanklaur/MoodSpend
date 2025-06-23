@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 function EditEntryPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -10,7 +12,7 @@ function EditEntryPage() {
   const [category, setCategory] = useState("General");
   const [mood, setMood] = useState("Happy");
   const [note, setNote] = useState("");
-  const [loading, setLoading] = useState(true); //  Wait before showing form
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -18,7 +20,7 @@ function EditEntryPage() {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await axios.get(`http://localhost:5000/api/entries/${id}`, {
+        const res = await axios.get(`${baseUrl}/api/entries/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -46,7 +48,7 @@ function EditEntryPage() {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/entries/${id}`,
+        `${baseUrl}/api/entries/${id}`,
         { amount, category, mood, note },
         {
           headers: {
@@ -62,7 +64,6 @@ function EditEntryPage() {
     }
   };
 
-  //  Loading and error handling
   if (loading) return <div style={{ padding: "2rem" }}>Loading...</div>;
   if (error) return <div style={{ padding: "2rem", color: "red" }}>{error}</div>;
 
@@ -72,21 +73,11 @@ function EditEntryPage() {
       <form onSubmit={handleUpdate}>
         <div>
           <label>Amount: </label>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
-          />
+          <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} required />
         </div>
         <div>
           <label>Category: </label>
-          <input
-            type="text"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            required
-          />
+          <input type="text" value={category} onChange={(e) => setCategory(e.target.value)} required />
         </div>
         <div>
           <label>Mood: </label>
@@ -100,12 +91,7 @@ function EditEntryPage() {
         </div>
         <div>
           <label>Note (optional): </label>
-          <textarea
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            rows={4}
-            cols={40}
-          />
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={4} cols={40} />
         </div>
         <button type="submit">Update Entry</button>
       </form>

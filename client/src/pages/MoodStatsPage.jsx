@@ -10,6 +10,8 @@ import {
   CartesianGrid,
 } from "recharts";
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const MoodStatsPage = () => {
   const [data, setData] = useState([]);
 
@@ -18,13 +20,12 @@ const MoodStatsPage = () => {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await axios.get("http://localhost:5000/api/entries/stats/moods", {
+        const res = await axios.get(`${baseUrl}/api/entries/stats/moods`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        // Format for Recharts
         const formatted = res.data.map((item) => ({
           mood: item._id,
           totalSpent: item.totalSpent,
