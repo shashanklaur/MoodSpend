@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose"); // ✅ Added for ObjectId fix
 const router = express.Router();
 const Entry = require("../models/Entry");
 const jwt = require("jsonwebtoken");
@@ -17,7 +18,32 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-// ✅ Get single entry by ID
+// ✅ Mood statistics route — uses ObjectId to match
+router.get("/stats/moods", verifyToken, async (req, res) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.user.id);
+    console.log("🔍 Getting mood stats for:", userId);
+
+    const stats = await Entry.aggregate([
+      { $match: { user: userId } },
+      {
+        $group: {
+          _id: "$mood",
+          totalSpent: { $sum: "$amount" },
+        },
+      },
+      { $sort: { totalSpent: -1 } },
+    ]);
+
+    console.log("📊 Stats Result:", stats);
+    res.json(stats);
+  } catch (err) {
+    console.error("❌ Stats Error:", err.message);
+    res.status(500).json({ message: "Failed to get mood statistics" });
+  }
+});
+
+// Get single entry by ID
 router.get("/:id", verifyToken, async (req, res) => {
   try {
     const entry = await Entry.findOne({ _id: req.params.id, user: req.user.id });

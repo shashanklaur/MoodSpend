@@ -4,6 +4,8 @@ import axios from "axios";
 function AddEntryPage() {
   const [amount, setAmount] = useState("");
   const [mood, setMood] = useState("Happy");
+  const [category, setCategory] = useState("General");
+  const [note, setNote] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,7 +15,12 @@ function AddEntryPage() {
     try {
       await axios.post(
         "http://localhost:5000/api/entries",
-        { amount, mood },
+        {
+          amount: parseFloat(amount),
+          mood,
+          category,
+          note,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -23,6 +30,8 @@ function AddEntryPage() {
       alert("Entry added!");
       setAmount("");
       setMood("Happy");
+      setCategory("General");
+      setNote("");
     } catch (err) {
       console.error(err);
       alert("Failed to add entry");
@@ -51,6 +60,23 @@ function AddEntryPage() {
             <option value="Calm">Calm</option>
             <option value="Anxious">Anxious</option>
           </select>
+        </div>
+        <div>
+          <label>Category: </label>
+          <input
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Note (optional): </label>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows="3"
+          ></textarea>
         </div>
         <button type="submit">Add Entry</button>
       </form>
