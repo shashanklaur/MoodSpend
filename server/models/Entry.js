@@ -8,7 +8,7 @@ const entrySchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      required: true,
+      default: "General", // ✅ Now optional, with a default
     },
     mood: {
       type: String,

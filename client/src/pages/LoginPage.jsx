@@ -12,8 +12,12 @@ const LoginPage = () => {
         email,
         password,
       });
+
+      const { token } = res.data;
+      localStorage.setItem("token", token); // ✅ Save token in localStorage
+
       alert("Login successful!");
-      console.log(res.data);
+      window.location.href = "/add-entry"; // ✅ Redirect to entry page
     } catch (err) {
       alert("Login failed");
       console.error(err);

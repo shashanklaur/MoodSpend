@@ -20,10 +20,16 @@ const verifyToken = (req, res, next) => {
 // Create a new entry
 router.post("/", verifyToken, async (req, res) => {
   try {
+    console.log("🔐 Authenticated User ID:", req.user.id);
+    console.log("📦 Request Body:", req.body);
+
     const newEntry = new Entry({ ...req.body, user: req.user.id });
     const saved = await newEntry.save();
+
+    console.log("✅ Entry Saved:", saved);
     res.status(201).json(saved);
   } catch (err) {
+    console.error("❌ Entry Creation Error:", err.message);
     res.status(500).json({ message: "Failed to create entry" });
   }
 });
@@ -63,3 +69,4 @@ router.delete("/:id", verifyToken, async (req, res) => {
 });
 
 module.exports = router;
+
