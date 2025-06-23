@@ -1,41 +1,48 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function EditEntryPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("General");
   const [mood, setMood] = useState("Happy");
   const [note, setNote] = useState("");
-
-  const token = localStorage.getItem("token");
+  const [loading, setLoading] = useState(true); //  Wait before showing form
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchEntry = async () => {
+      const token = localStorage.getItem("token");
+
       try {
         const res = await axios.get(`http://localhost:5000/api/entries/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        const { amount, category, mood, note } = res.data;
-        setAmount(amount);
-        setCategory(category);
-        setMood(mood);
-        setNote(note || "");
+
+        const entry = res.data;
+        setAmount(entry.amount);
+        setCategory(entry.category);
+        setMood(entry.mood);
+        setNote(entry.note || "");
+        setLoading(false);
       } catch (err) {
-        console.error(err);
-        alert("Failed to load entry");
+        console.error("Error fetching entry:", err);
+        setError("Failed to load entry.");
+        setLoading(false);
       }
     };
 
     fetchEntry();
-  }, [id, token]);
+  }, [id]);
 
-  const handleSubmit = async (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
 
     try {
       await axios.put(
@@ -50,15 +57,19 @@ function EditEntryPage() {
       alert("Entry updated!");
       navigate("/view-entries");
     } catch (err) {
-      console.error(err);
-      alert("Failed to update entry");
+      console.error("Error updating entry:", err);
+      alert("Failed to update entry.");
     }
   };
 
+  //  Loading and error handling
+  if (loading) return <div style={{ padding: "2rem" }}>Loading...</div>;
+  if (error) return <div style={{ padding: "2rem", color: "red" }}>{error}</div>;
+
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: "2rem" }}>
       <h2>Edit Entry</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleUpdate}>
         <div>
           <label>Amount: </label>
           <input
@@ -92,8 +103,9 @@ function EditEntryPage() {
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            rows="3"
-          ></textarea>
+            rows={4}
+            cols={40}
+          />
         </div>
         <button type="submit">Update Entry</button>
       </form>

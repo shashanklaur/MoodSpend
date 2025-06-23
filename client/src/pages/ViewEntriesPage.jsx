@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // ✅ needed for Edit button navigation
 
 function ViewEntriesPage() {
   const [entries, setEntries] = useState([]);
+  const navigate = useNavigate(); // ✅ hook to redirect user
 
   const fetchEntries = async () => {
     const token = localStorage.getItem("token");
@@ -42,6 +44,10 @@ function ViewEntriesPage() {
     }
   };
 
+  const handleEdit = (id) => {
+    navigate(`/edit-entry/${id}`); // ✅ go to edit screen
+  };
+
   return (
     <div style={{ padding: "2rem" }}>
       <h2>Your Entries</h2>
@@ -54,8 +60,12 @@ function ViewEntriesPage() {
               ${entry.amount} - {entry.category} - {entry.mood} on{" "}
               {new Date(entry.date).toLocaleDateString()}
               {entry.note && <> — Note: {entry.note}</>}
-              <br />
-              <button onClick={() => handleDelete(entry._id)}>Delete</button>
+              <div style={{ marginTop: "0.5rem" }}>
+                <button onClick={() => handleEdit(entry._id)} style={{ marginRight: "0.5rem" }}>
+                  Edit
+                </button>
+                <button onClick={() => handleDelete(entry._id)}>Delete</button>
+              </div>
             </li>
           ))}
         </ul>

@@ -17,19 +17,24 @@ const verifyToken = (req, res, next) => {
   }
 };
 
+// ✅ Get single entry by ID
+router.get("/:id", verifyToken, async (req, res) => {
+  try {
+    const entry = await Entry.findOne({ _id: req.params.id, user: req.user.id });
+    if (!entry) return res.status(404).json({ message: "Entry not found" });
+    res.json(entry);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch entry" });
+  }
+});
+
 // Create a new entry
 router.post("/", verifyToken, async (req, res) => {
   try {
-    console.log("🔐 Authenticated User ID:", req.user.id);
-    console.log("📦 Request Body:", req.body);
-
     const newEntry = new Entry({ ...req.body, user: req.user.id });
     const saved = await newEntry.save();
-
-    console.log("✅ Entry Saved:", saved);
     res.status(201).json(saved);
   } catch (err) {
-    console.error("❌ Entry Creation Error:", err.message);
     res.status(500).json({ message: "Failed to create entry" });
   }
 });
@@ -69,4 +74,3 @@ router.delete("/:id", verifyToken, async (req, res) => {
 });
 
 module.exports = router;
-
