@@ -1,13 +1,14 @@
 # Node modules
-server/node_modules
-client/node_modules
+node_modules/
+**/node_modules/
 
 # Environment files
+.env
 *.env
 
 # Logs
 *.log
 
 # IDE junk
-.vscode
+.vscode/
 .DS_Store
